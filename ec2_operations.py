@@ -9,8 +9,7 @@ load_dotenv()
 instance_name = f'my-ec2-instance-{datetime.now().strftime("%Y%m%d%H%M%S")}'
 instance_id = None
 region = 'us-east-2'
-key_name = os.getenv('KEY_NAME')  # Default to 'ec2-aws-key' if not set
-
+key_name = os.getenv('KEY_NAME') 
 ec2 = boto3.resource('ec2', region_name=region)
 
 
