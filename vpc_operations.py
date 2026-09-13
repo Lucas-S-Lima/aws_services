@@ -74,14 +74,15 @@ def create_route_table(vpc_id, ig_id):
         rt_id = route_tables[0]['RouteTableId']
         print(f"Route Table {rt_name} with ID {rt_id} already exists.")
 
+
+    route_table_response = ec2.create_route_table(VpcId=vpc_id)
+    rt_id = route_table_response['RouteTable']['RouteTableId']
+
     create_params = {
         'RouteTableId': rt_id,
         'DestinationCidrBlock': '0.0.0.0/0',
         'GatewayId': ig_id
     }
-
-    route_table_response = ec2.create_route_table(VpcId=vpc_id)
-    rt_id = route_table_response['RouteTable']['RouteTableId']
 
     time.sleep(2)
 
