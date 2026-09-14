@@ -5,8 +5,10 @@ from botocore.exceptions import ClientError
 
 bucket_name = f"my-bucket-{int(time.time())}"
 region = 'us-east-1'
+endpoint_url = 'http://localhost:4566'
 
-s3 = boto3.client('s3', region_name=region)
+session = boto3.Session(profile_name="localstack")
+s3 = session.client('s3', region_name=region, endpoint_url=endpoint_url)
 
 
 def create_bucket(bucket_name, bucket_region):

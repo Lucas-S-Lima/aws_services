@@ -3,12 +3,15 @@ import time
 from datetime import datetime
 
 
+vpc_name = f'vpc-{datetime.now().strftime("%Y%m%d%H%M%S")}'
 region = 'us-east-1'
-ec2 = boto3.client('ec2', region_name=region)
+endpoint_url = 'http://localhost:4566'
+
+session = boto3.Session(profile_name="localstack")
+ec2 = session.client('ec2', region_name=region, endpoint_url=endpoint_url)
 
 
-def create_vpc():
-    vpc_name = f'vpc-{datetime.now().strftime("%Y%m%d%H%M%S")}'
+def create_vpc(vpc_name):
 
     response = ec2.describe_vpcs(Filters=[{"Name": "tag:Name", "Values": [vpc_name]}])
 

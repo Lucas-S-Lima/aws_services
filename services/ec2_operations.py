@@ -7,10 +7,12 @@ from datetime import datetime
 load_dotenv()
 
 instance_name = f'my-ec2-instance-{datetime.now().strftime("%Y%m%d%H%M%S")}'
-instance_id = None
-region = 'us-east-2'
-key_name = os.getenv('KEY_NAME') 
-ec2 = boto3.resource('ec2', region_name=region)
+region = 'us-east-1'
+endpoint_url = 'http://localhost:4566'
+key_name = os.getenv('KEY_NAME', 'default')
+
+session = boto3.Session(profile_name="localstack")
+ec2 = session.resource('ec2', region_name=region, endpoint_url=endpoint_url)
 
 
 def get_latest_amzn2_ami(region_name):
