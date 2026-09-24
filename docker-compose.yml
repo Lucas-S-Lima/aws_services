@@ -1,13 +1,17 @@
 services:
   localstack:
     container_name: "localstack-main"
+    
     image: localstack/localstack:latest
+    
     ports:
-      - "127.0.0.1:4566:4566" 
-      - "127.0.0.1:4510-4559:4510-4559" 
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4510-4559:4510-4559"
+    
     environment:
       - DEBUG=0
       - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
+
     volumes:
       - "./volume:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"

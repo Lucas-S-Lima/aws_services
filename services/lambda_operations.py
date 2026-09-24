@@ -15,26 +15,34 @@ lambda_client = boto3.client(
     region_name=region,
 )
 
-def _create_zipped_file(zip_filename="function.zip"):
+def _create_zipped_file(source_file='services/main_lambda.py', arcname='main_lambda.py', zip_filename="function.zip"):
   with zipfile.ZipFile(zip_filename, 'w') as zipf:
-    zipf.write('services/main_lambda.py', arcname='main_lambda.py')
+    zipf.write(source_file, arcname=arcname)
   print(f"File '{zip_filename}' created.")
 
 
-def create_lambda():
- _create_zipped_file()
- with open("function.zip", "rb") as f:
-  zipped_code = f.read()
+def create_lambda(name=lambda_name, source_file='services/main_lambda.py', handler='main_lambda.lambda_handler'):
+  """
+  Create a Lambda function from a local Python file.
+
+  :param name: Name of the Lambda function
+  :param source_file: Path to the Python source file (e.g. 'services/automating_ec2_snapshot.py')
+  :param handler: Handler in the format 'module.function' (e.g. 'automating_ec2_snapshot.lambda_handler')
+  """
+  arcname = source_file.split('/')[-1]
+  _create_zipped_file(source_file=source_file, arcname=arcname)
+  with open("function.zip", "rb") as f:
+    zipped_code = f.read()
 
   try:
     response = lambda_client.create_function(
-        FunctionName=lambda_name,
+        FunctionName=name,
         Runtime='python3.12',
         Role='arn:aws:iam::000000000000:role/lambda-role',
-        Handler='main_lambda.lambda_handler',
+        Handler=handler,
         Code={'ZipFile': zipped_code},
         Description='Lambda created via localstack',
-        Timeout=3,
+        Timeout=60,
         MemorySize=128,
     )
     print('Lambda created successfully')
@@ -88,5 +96,15 @@ def update_lambda(lambda_name):
 def delete_lambda(lambda_name):
   try:
     lambda_client.delete_function(FunctionName=lambda_name)
+  except Exception as e:
+    print(f'Error: {e}')
+
+def update_lambda_env(lambda_name, env_vars):
+  try:
+    lambda_client.update_function_configuration(
+        FunctionName=lambda_name,
+        Environment={'Variables': env_vars},
+    )
+    print(f'Environment variables updated successfully for {lambda_name}.')
   except Exception as e:
     print(f'Error: {e}')
